@@ -22,7 +22,7 @@ void combina(char* resultado, char** combinacoes, char* digitos, int posicao, in
 char** combinacoes_de_letras(char* digitos, int* tamanho) {
     int contador = 0;
     char resultado[strlen(digitos) + 1];
-    char** combinacoes = (char**)malloc(10000 * sizeof(char*)); // aloca espaço para 10000 combinações
+    char** combinacoes = (char**)malloc(10000 * sizeof(char*));
     combina(resultado, combinacoes, digitos, 0, &contador);
     *tamanho = contador;
     return combinacoes;
@@ -39,9 +39,9 @@ int main() {
     printf("Combinacoes de letras:\n");
     for (int i = 0; i < tamanho; i++) {
         printf("%s\n", combinacoes[i]);
-        free(combinacoes[i]); // libera a memória alocada para cada combinação
+        free(combinacoes[i]); 
     }
-    free(combinacoes); // libera a memória alocada para o array de combinações
+    free(combinacoes);
 
     return 0;
 }
