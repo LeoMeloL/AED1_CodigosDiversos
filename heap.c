@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -11,51 +12,51 @@ typedef struct _queue {
 }Queue;
 
 typedef struct _node {
-    int code;
+    char name[50];
     struct _node *next;
 }Node;
 
 Queue *START();
-void PUSH( Queue * pQueue, Node * newNode );
-Node * POP( Queue * pQueue );
-void CLEAR( Queue * pQueue );
-void PRINT( Queue * pQueue );
-Node * NEWNODE( int code );
-BOOL EMPTY( Queue * pQueue);
+void PUSH(Queue *pQueue, Node *newNode);
+Node *POP(Queue *pQueue);
+void CLEAR(Queue *pQueue);
+void PRINT(Queue *pQueue);
+Node *NEWNODE(char *name);
+BOOL EMPTY(Queue *pQueue);
 
 int main() {
     Queue * pQ = START();
     Node * pNode;
 
-    PUSH( pQ, NEWNODE(1) );
-    PUSH( pQ, NEWNODE(2) );
-    PUSH( pQ, NEWNODE(3) );
-    PUSH( pQ, NEWNODE(4) );
-    PUSH( pQ, NEWNODE(5) );
-    PUSH( pQ, NEWNODE(6) );
+PUSH(pQ, NEWNODE("Alice"));
+PUSH(pQ, NEWNODE("Bob"));
+PUSH(pQ, NEWNODE("Charlie"));
+PUSH(pQ, NEWNODE("David"));
+PUSH(pQ, NEWNODE("Emma"));
+PUSH(pQ, NEWNODE("Frank"));
 
-    PRINT( pQ );
-    
-    pNode = POP( pQ );
-    free( pNode );
-    pNode = POP( pQ );
-    free( pNode );
-    pNode = POP( pQ );
-    free( pNode );
+PRINT(pQ);
 
-    printf("\n+---+\n\n");
-    PRINT( pQ );
+pNode = POP(pQ);
+free(pNode);
+pNode = POP(pQ);
+free(pNode);
+pNode = POP(pQ);
+free(pNode);
 
-    PUSH( pQ, NEWNODE(1) );
-    PUSH( pQ, NEWNODE(2) );
-    PUSH( pQ, NEWNODE(3) );
+printf("\n+---+\n\n");
+PRINT(pQ);
 
-    printf("\n+---+\n\n");
-    PRINT( pQ );
+PUSH(pQ, NEWNODE("Grace"));
+PUSH(pQ, NEWNODE("Henry"));
+PUSH(pQ, NEWNODE("Isabella"));
 
-    CLEAR( pQ );
+printf("\n+---+\n\n");
+PRINT(pQ);
 
-    return 0;
+CLEAR(pQ);
+
+return 0;
 }
 
 Queue* START() {
@@ -111,17 +112,17 @@ void PRINT( Queue * pQueue ) {
 
     do {
         pNode = POP( pQueue);
-        printf(" %d \n", pNode->code);
+        printf(" %s \n", pNode->name);
         PUSH( pQueue, pNode);
     } while ( pFirst != pQueue->first );
 }
 
-Node *NEWNODE( int code ) {
-    Node * newNode = ( Node * )malloc( sizeof( Node ) );
-    newNode->code = code;
-    newNode->next = NULL;
-
-    return newNode;
+Node *NEWNODE(char *name)
+{
+Node *newNode = (Node *)malloc(sizeof(Node));
+strcpy(newNode->name, name);
+newNode->next = NULL;
+return newNode;
 }
 
 BOOL EMPTY( Queue * pQueue ) {
