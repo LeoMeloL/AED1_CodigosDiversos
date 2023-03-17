@@ -16,6 +16,31 @@ typedef struct {
     sNodo *pFirst;
 } Sentinela;
 
+
+void remover(Sentinela *lista, char nome[]) {
+    sNodo *nodoAtual = lista->pFirst;
+    sNodo *nodoAnterior = NULL;
+
+    while (nodoAtual != NULL && strcmp(nodoAtual->info.nome, nome) != 0) {
+        nodoAnterior = nodoAtual;
+        nodoAtual = nodoAtual->pNext;
+    }
+
+    if (nodoAtual == NULL) {
+        printf("Pessoa nao encontrada.\n");
+        return;
+    }
+
+    if (nodoAnterior == NULL) {
+        lista->pFirst = nodoAtual->pNext;
+    } else {
+        nodoAnterior->pNext = nodoAtual->pNext;
+    }
+
+    free(nodoAtual);
+}
+
+
 void adicionar(Sentinela *lista, Dados dados) {
     sNodo *novoNodo = (sNodo*) malloc(sizeof(sNodo));
     novoNodo->info.idade = dados.idade;
@@ -27,7 +52,6 @@ void adicionar(Sentinela *lista, Dados dados) {
         return;
     }
 
-    // Insere em ordem alfabética
     sNodo *nodoAtual = lista->pFirst;
     sNodo *nodoAnterior = NULL;
     while (nodoAtual != NULL && strcmp(nodoAtual->info.nome, novoNodo->info.nome) < 0) {
