@@ -19,10 +19,10 @@ typedef struct buff{
 }Buff;
 
 typedef struct equipament{
-    char *equipamento;
+    char equipamento[100];
     bool Equiped;
     Buff buff;
-    char *Tipo;
+    char Tipo[20];
 }Equipament;
 
 typedef struct stats{
@@ -49,7 +49,7 @@ void PrintPlayer(Stats *player);
 bool Fight(Stats *player, Stats *enemy);
 void PlayerModifier(Stats *player);
 void EquipamentoAux(Stats *player);
-void generateDrop(Stats *enemy);
+void GenerateDrop(Stats *enemy);
 
 
  Stats generateEnemy(Stats player){
@@ -60,7 +60,7 @@ void generateDrop(Stats *enemy);
     int superior = player.level + 4;
 
     int enemyLevel = (rand() % (superior - inferior + 1)) + inferior;
-    int drop = rand() % 101;
+    int drop = rand() % 50;
 
     Stats enemy;
     int rarity = (rand() % (100 - 0 + 1) + 0);
@@ -201,7 +201,7 @@ Stats FullEnemy(Stats player){
     strcpy(enemy.nome,RandomNames(enemy));
     FullHealth = enemy.hp;
     if (enemy.drop == true){
-    generateDrop(&enemy);
+    GenerateDrop(&enemy);
     }
 
     return enemy;
@@ -234,6 +234,7 @@ Stats createPlayer(){
     player.def = def;
     player.speed = speed;
     player.expLimit = 100;
+    player.exp = 0;
     FullPlayerHealth = player.hp;
     player.level = 1;
     strcpy(player.nome , nome);
@@ -264,6 +265,28 @@ void levelUp(Stats **player){
     (*player)->atk += 3;
     (*player)->def += 1;
     (*player)->speed += 1;
+}
+
+void GetDrop(Stats *player, Stats *enemy){
+
+    char separator[2] = "-";
+    strcat(player->equip.equipamento, separator);
+    strcat(player->equip.equipamento, enemy->equip.equipamento);
+
+    if (strcmp(enemy->equip.Tipo, "atk") == 0)
+    player->atk += enemy->equip.buff.atk;
+    if (strcmp(enemy->equip.Tipo, "hp") == 0)
+    player->hp += enemy->equip.buff.hp;
+    if (strcmp(enemy->equip.Tipo, "all") == 0) {
+    float porcentagem = (float)enemy->equip.buff.all / 100;
+    player->atk += enemy->equip.buff.atk + (player->atk + (player->atk * porcentagem));
+    player->def += enemy->equip.buff.def + (player->def + (player->def * porcentagem));
+    player->hp += enemy->equip.buff.hp + (player->hp + (player->hp * porcentagem));
+    player->speed += (player->speed + (player->speed * porcentagem));
+    }
+
+    printf("\nDROP: %s", enemy->equip.equipamento);
+
 }
 
 
@@ -301,18 +324,10 @@ bool Fight(Stats *player, Stats *enemy){
                 printf("\nEXP: %d", enemy->exp);
                 player->exp += enemy->exp;
                 if (enemy->drop == true){
-                    printf("\nDROP: %s", enemy->equip.equipamento);
-                    char separator[2] = "-";
-                    strcat(player->equip.equipamento, separator);
-                    strcat(player->equip.equipamento, enemy->equip.equipamento);
-                    float porcentagem = (float)enemy->equip.buff.all / 100;
-                    player->atk += enemy->equip.buff.atk + (player->atk + (player->atk * porcentagem));
-                    player->def += enemy->equip.buff.def + (player->def + (player->def * porcentagem));
-                    player->hp += enemy->equip.buff.hp + (player->hp + (player->hp * porcentagem));
-                    player->speed += (player->speed + (player->speed * porcentagem));
+                  GetDrop(player, enemy);
                 }
 
-            if (player->exp >= player->expLimit) {
+            while (player->exp >= player->expLimit) {
                 levelUp(&player);
                 printf("\nLEVEL UP");
             }
@@ -418,6 +433,7 @@ void PlayerModifier(Stats *player){
         printf("Digite o novo valor: ");
         scanf("%d", &valor);
         player->hp = valor;
+        FullPlayerHealth = valor;
     }
 }
 
@@ -488,7 +504,7 @@ void GenerateDrop(Stats *enemy){
     int buff;
     if (rarity < 100){
         random = rand() % MAX;
-        enemy->equip.equipamento = nomesComum[random];
+        strcpy(enemy->equip.equipamento,nomesComum[random]);
         if (strstr(nomesComum[random], "Espada") != NULL){
             buff = rand() % 10;
             enemy->equip.buff.atk = buff;
@@ -507,7 +523,7 @@ void GenerateDrop(Stats *enemy){
     }
     if (rarity < 200 && rarity > 100){
         random = rand() % MAX;
-        enemy->equip.equipamento = nomesRaro[random];
+        strcpy(enemy->equip.equipamento,nomesRaro[random]);
         if (strstr(nomesRaro[random], "Espada") != NULL){
             buff = (rand() % (25 - 10)) + 10;
             enemy->equip.buff.atk = buff;
@@ -526,7 +542,7 @@ void GenerateDrop(Stats *enemy){
     }
     if (rarity < 300 && rarity > 200){
         random = rand() % MAX;
-        enemy->equip.equipamento = nomesEpico[random];
+        strcpy(enemy->equip.equipamento,nomesEpico[random]);
         if (strstr(nomesEpico[random], "Armadura") != NULL){
             buff = (rand() % (250 - 100)) + 100;
             enemy->equip.buff.hp = buff;
@@ -547,21 +563,21 @@ void GenerateDrop(Stats *enemy){
         int item = rand() % 3;
         if (item == 0){
         random = rand() % (MAX / 2);
-        enemy->equip.equipamento = nomesLendariosSwords[random];
+        strcpy(enemy->equip.equipamento,nomesLendariosSwords[random]);
         buff = (rand() % (100 - 40)) + 40;
         enemy->equip.buff.atk = buff;
         strcpy(enemy->equip.Tipo, "atk");
         }
         if (item == 1){
             random = rand() % (MAX / 2) + 1;
-            enemy->equip.equipamento = nomesLendariosArmors[random];
+            strcpy(enemy->equip.equipamento,nomesLendariosArmors[random]);
             buff = (rand() % (500 - 250)) + 250;
             enemy->equip.buff.hp = buff;
             strcpy(enemy->equip.Tipo, "hp");
         }
         if (item == 2){
             random = rand() % 2;
-            enemy->equip.equipamento = nomesLendariosTalisma[random];
+            strcpy(enemy->equip.equipamento,nomesLendariosTalisma[random]);
             buff = (rand() % (40 - 25)) + 25;
             enemy->equip.buff.all = buff;
             strcpy(enemy->equip.Tipo, "all");
@@ -571,7 +587,7 @@ void GenerateDrop(Stats *enemy){
 
     if (rarity < 500 && rarity > 400){
         random = rand() % MAX;
-        enemy->equip.equipamento = nomesEspeciais[random];
+        strcpy(enemy->equip.equipamento,nomesEspeciais[random]);
         int buffAtk = (rand() % (250 - 100)) + 100;
         int buffHp = (rand()% (1500 - 500)) + 500;
         int buffAll = (rand()% (100 - 40)) + 40;
@@ -582,7 +598,7 @@ void GenerateDrop(Stats *enemy){
     }
     if (rarity > 500){
         random = rand() % 5;
-        enemy->equip.equipamento = nomesUltraLendarios[random];
+        strcpy(enemy->equip.equipamento,nomesUltraLendarios[random]);
         int buffAtk = (rand() % (1000 - 250)) + 250;
         int buffHp = (rand()% (15000 - 1500)) + 1500;
         int buffAll = (rand()% (300 - 100)) + 100;
@@ -646,4 +662,5 @@ int main(){
         }
 
     }
+    return 0;
 }
